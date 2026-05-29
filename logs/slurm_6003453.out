@@ -1,0 +1,55 @@
+Job ID: 6003453
+Job Name: cyclegan_vangogh
+Node: nid0643
+Start Time: Fri Nov 28 03:11:03 PM EST 2025
+Working Directory: /N/u/vravirao/BigRed200/style_transfer/cyclegan-vangogh
+GPU Information:
+Fri Nov 28 15:11:03 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:C1:00.0 Off |                    0 |
+| N/A   32C    P0             50W /  311W |       1MiB /  40960MiB |      0%   E. Process |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+Python version: Python 3.13.9
+PyTorch version: 2.9.1+cu128
+CUDA available: True
+Starting training from epoch 0
+Total epochs: 100
+Device: cuda
+Saved checkpoint: ./checkpoints/checkpoint_epoch_5.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_10.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_15.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_20.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_25.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_30.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_35.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_40.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_45.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_50.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_55.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_60.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_65.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_70.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_75.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_80.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_85.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_90.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_95.pth
+Saved checkpoint: ./checkpoints/checkpoint_epoch_100.pth
+Training completed!
+End Time: Sat Nov 29 04:53:58 AM EST 2025
+Job completed!
