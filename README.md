@@ -1,8 +1,6 @@
 # CycleGAN — Van Gogh Style Transfer
 
-A PyTorch implementation of CycleGAN trained end-to-end on Indiana University's **BigRed200 HPC cluster** (SLURM) to perform unpaired photo-to-Van Gogh style transfer. Part of a larger comparative study of neural style transfer architectures (CycleGAN vs. Stable Diffusion LoRA vs. VGG-16).
-
-> **For hiring managers:** This project demonstrates hands-on experience with adversarial training, HPC/SLURM job scheduling, GPU cluster compute management, and iterative model evaluation — skills directly applicable to production ML workflows.
+A PyTorch implementation of CycleGAN trained end-to-end on Indiana University's **BigRed200 HPC cluster** (SLURM) to perform unpaired photo-to-Van Gogh style transfer.
 
 ---
 
@@ -19,7 +17,7 @@ A PyTorch implementation of CycleGAN trained end-to-end on Indiana University's 
 ![Iterations](images/iterations.png)
 
 ### Loss Curves (100 Epochs)
-*Generator loss oscillates as expected in adversarial training. Cycle consistency loss and discriminator losses remain low and stable — indicating the cycle reconstruction constraint is successfully enforced.*
+*Generator loss oscillates as expected in adversarial training. Cycle consistency loss and discriminator losses remain low and stable - indicating the cycle reconstruction constraint is successfully enforced.*
 
 ![Loss curves](images/Loss_curves.png)
 
