@@ -1,163 +1,69 @@
-# CycleGAN Van Gogh Style Transfer
+# CycleGAN — Van Gogh Style Transfer
 
-A modular PyTorch implementation of CycleGAN for fine-tuning pre-trained models to produce Van Gogh styled images.
+A PyTorch implementation of CycleGAN trained end-to-end on Indiana University's **BigRed200 HPC cluster** (SLURM) to perform unpaired photo-to-Van Gogh style transfer. Part of a larger comparative study of neural style transfer architectures (CycleGAN vs. Stable Diffusion LoRA vs. VGG-16).
 
-## Features
+> **For hiring managers:** This project demonstrates hands-on experience with adversarial training, HPC/SLURM job scheduling, GPU cluster compute management, and iterative model evaluation — skills directly applicable to production ML workflows.
 
-- **Modular Architecture**: Clean, organized code structure
-- **Fine-tuning Support**: Load and fine-tune pre-trained CycleGAN models
-- **Flexible Configuration**: Easy-to-use hyperparameter configuration
-- **Training & Inference**: Complete training pipeline with inference script
+---
 
-## Installation
+## Results
 
-1. Clone or navigate to the project directory:
-```bash
-cd cyclegan-vangogh
-```
+### Style Transfer Outputs
+*Top row: original photos. Bottom rows: Van Gogh stylized outputs. Works best on landscapes and natural scenery.*
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+![Output images](images/outputs.png)
 
-## Dataset Setup
+### Training Progress (Epoch-by-Epoch)
+*The model progressively learns Van Gogh's texture and color palette over 100 epochs.*
 
-1. Download the dataset using the provided script:
-```bash
-chmod +x download.sh
-./download.sh
-```
+![Iterations](images/iterations.png)
 
-2. The dataset will be extracted to `dataset/vangogh2photo/` with the following structure:
-   - **Style images (Van Gogh)**: `dataset/vangogh2photo/trainA/`
-   - **Photo images**: `dataset/vangogh2photo/trainB/`
-   - **Test sets**: `dataset/vangogh2photo/testA/` and `testB/`
+### Loss Curves (100 Epochs)
+*Generator loss oscillates as expected in adversarial training. Cycle consistency loss and discriminator losses remain low and stable — indicating the cycle reconstruction constraint is successfully enforced.*
 
-The download script automatically extracts the dataset to the correct location.
+![Loss curves](images/Loss_curves.png)
 
-## Usage
+---
 
-### Training from Scratch
+## Limitations
 
-```bash
-python train.py \
-    --photo_path ./dataset/vangogh2photo/trainB \
-    --style_path ./dataset/vangogh2photo/trainA \
-    --batch_size 1 \
-    --n_epochs 100 \
-    --image_size 256 \
-    --checkpoint_dir ./checkpoints \
-    --output_dir ./outputs
-```
+- Performs well on **landscapes and natural scenery** (foliage, skies, countryside)
+- Degrades on **faces, people, and modern architecture** — the style overwhelms fine structural detail, producing artifacts
+- Style transfer is one-directional to Van Gogh; it does not generalize to other artists without retraining
 
-Or use default paths (no need to specify):
-```bash
-python train.py --batch_size 1 --n_epochs 100
-```
+---
 
-### Fine-tuning a Pre-trained Model
+## Architecture
 
-```bash
-python train.py \
-    --pretrained_path /path/to/pretrained/checkpoint.pth \
-    --photo_path ./dataset/vangogh2photo/trainB \
-    --style_path ./dataset/vangogh2photo/trainA \
-    --batch_size 1 \
-    --n_epochs 50 \
-    --fine_tune_lr 0.0001 \
-    --freeze_discriminators \
-    --checkpoint_dir ./checkpoints \
-    --output_dir ./outputs
-```
+CycleGAN learns bidirectional mappings between two unpaired image domains (photos ↔ Van Gogh paintings) using two generators and two discriminators trained simultaneously.
 
-Or use default paths:
-```bash
-python train.py \
-    --pretrained_path /path/to/pretrained/checkpoint.pth \
-    --batch_size 1 \
-    --n_epochs 50 \
-    --fine_tune_lr 0.0001 \
-    --freeze_discriminators
-```
+![CycleGAN Architecture](images/Cyclegan_archi.png)
 
-### Inference (Style Transfer)
+| Component | Details |
+|---|---|
+| **Generator G_AB** | Photo → Van Gogh painting |
+| **Generator G_BA** | Van Gogh painting → Photo |
+| **Discriminator D_B** | Distinguishes real vs. fake Van Gogh images |
+| **Discriminator D_A** | Distinguishes real vs. fake photos |
 
-```bash
-python inference.py \
-    --image_path /path/to/input/image.jpg \
-    --checkpoint_path ./checkpoints/checkpoint_epoch_100.pth \
-    --output_path ./output_styled.png
-```
+### Generator (ResNet-based)
+- **Encoder**: Conv layers with stride-2 downsampling + Reflection Padding + Instance Normalization
+- **Transformer**: 9 residual blocks for deep feature learning (no vanishing gradients)
+- **Decoder**: Transposed convolution upsampling back to 256×256
 
-## Configuration Options
+### Discriminator (PatchGAN)
+- Classifies overlapping **70×70 patches** as real or fake (not the full image)
+- Focuses the generator on high-frequency textures and brushwork rather than global structure
 
-### Training Parameters
+### Loss Functions
+| Loss | Purpose |
+|---|---|
+| **Adversarial (LSGAN)** | Forces generator outputs to be indistinguishable from real images |
+| **Cycle Consistency** | Ensures A → G(A) → F(G(A)) ≈ A; preserves content structure |
+| **Identity** | Keeps color/tone stable when domain is already the target |
 
-- `--photo_path`: Path to photo images directory
-- `--style_path`: Path to Van Gogh style images directory
-- `--batch_size`: Batch size (default: 1)
-- `--n_epochs`: Number of training epochs (default: 100)
-- `--lr`: Learning rate (default: 0.0002)
-- `--lambda_cycle`: Cycle consistency loss weight (default: 10.0)
-- `--lambda_identity`: Identity loss weight (default: 0.5)
-- `--image_size`: Input image size (default: 256)
+---
 
-### Fine-tuning Parameters
+## Training on HPC (SLURM / BigRed200)
 
-- `--pretrained_path`: Path to pre-trained model checkpoint
-- `--fine_tune_lr`: Learning rate for fine-tuning (default: 0.0001)
-- `--freeze_discriminators`: Freeze discriminators during fine-tuning
-- `--resume_training`: Resume training from checkpoint
-
-### Model Architecture
-
-- `--ngf`: Number of generator filters (default: 64)
-- `--ndf`: Number of discriminator filters (default: 64)
-- `--input_nc`: Number of input channels (default: 3)
-- `--output_nc`: Number of output channels (default: 3)
-
-## Model Architecture
-
-### Generator
-- ResNet-based architecture with 9 residual blocks
-- Architecture: c7s1-64, d128, d256, R256×9, u128, u64, c7s1-3
-- Uses instance normalization and reflection padding
-
-### Discriminator
-- PatchGAN architecture (70×70 patches)
-- 3-layer discriminator with instance normalization
-
-## Training Process
-
-The training process includes:
-1. **Adversarial Loss**: Generator vs Discriminator
-2. **Cycle Consistency Loss**: Ensures A→B→A reconstruction
-3. **Identity Loss**: Preserves color and tone
-
-Losses are logged to TensorBoard (check `./logs/`).
-
-## Checkpoints
-
-Checkpoints are saved every `save_epoch_freq` epochs (default: 5) in the `checkpoint_dir`. Each checkpoint contains:
-- Generator weights (G_AB, G_BA)
-- Discriminator weights (D_A, D_B)
-- Optimizer states
-- Training epoch
-
-## Fine-tuning Tips
-
-1. **Lower Learning Rate**: Use `--fine_tune_lr 0.0001` (lower than training from scratch)
-2. **Freeze Discriminators**: Use `--freeze_discriminators` to only fine-tune generators
-3. **Fewer Epochs**: Fine-tuning typically requires fewer epochs (20-50)
-4. **Pre-trained Models**: You can use CycleGAN pre-trained models from:
-   - Official CycleGAN repository
-   - Model Zoo repositories
-   - Your own trained models
-
-## Output
-
-- **Checkpoints**: Saved in `./checkpoints/`
-- **Sample Images**: Saved in `./outputs/` during training
-- **TensorBoard Logs**: Saved in `./logs/`
-
+Training was submitted as a SLURM batch job on **Indiana University's BigRed200 supercomputer** — a production HPC cluster used for large-scale research workloads. Trained it for 14 hours in a 4 core 32 GB VRAM Nvidia GPU for 100 epochs, with a batch size of 1.
